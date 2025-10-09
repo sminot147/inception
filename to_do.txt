@@ -1,0 +1,50 @@
+- Verifier que les containeurs redemare
+
+
+Liste des commande :
+1- Construire l'image
+docker build -t mymiriadb .
+
+2- Lancer l'image : 
+docker run -d     --name test-mariadb     -p 3306:3306    --env-file ../.env     mymiriadb
+
+3- Supprimer si besoin
+docker rm test-mariadb  
+
+4- Checker si tous va bien
+docker ps           -a (si on veut voir ce qui sont mort)
+
+
+5- Checker les log
+docker logs test-mariadb
+
+
+6- Entrer dans un Docker
+docker exec -it name sh 
+ps -ef (voir le pid)
+kill (numero du pid principale) -> relance le  docker
+
+
+
+# Voir les containers
+docker compose ps
+
+# Voir les logs
+docker compose logs
+docker compose logs -f mariadb
+
+# Arrêter
+docker compose down
+
+# Arrêter et supprimer volumes
+docker compose down -v
+
+# Redémarrer un service
+docker compose restart mariadb
+
+# Reconstruire sans cache
+docker compose build --no-cache
+
+# Nettoyer complètement
+docker compose down -v
+docker system prune -a

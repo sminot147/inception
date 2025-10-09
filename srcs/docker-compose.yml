@@ -1,0 +1,27 @@
+
+services:
+ mariadb:
+    build:
+      context: ./requirements/mariadb
+    entrypoint: /usr/local/bin/init.sh
+    image: mariadb
+    container_name: mariadb
+    env_file: .env
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    restart: always
+    networks:
+      - inception
+
+networks:
+  inception:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/sminot/data/mariadb
+    name: mariadb_data
