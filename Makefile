@@ -1,9 +1,30 @@
-all : up
+.PHONY: all re up down logs fclean prune logs
 
-up :
-	mkdir -p /home/${USER}/data/wordpress
-	mkdir -p /home/${USER}/data/wordpress
-	docker-compose -f srcs/docker-compose.yml --env-file srcs/.env build
+DOCKER_COMPOSE_FILE=srcs/docker-compose.yml
 
-down :
-	docker-compose -f srcs/docker-compose.yml down --volumes --remove-orphans
+all: up
+
+re: fclean up
+
+up:
+	mkdir -p /home/${USER}/data/mariadb
+	mkdir -p /home/${USER}/data/wordpress
+	docker compose -f $(DOCKER_COMPOSE_FILE) up --build
+
+
+down:
+	docker compose -f $(DOCKER_COMPOSE_FILE) down
+
+logs:
+	docker compose -f $(DOCKER_COMPOSE_FILE) logs
+
+fclean: down
+	docker volume rm mariadb_data || true
+	docker volume rm wordpress_data || true
+	docker image rmi wordpress || true
+	docker image rmi mariadb || true
+	docker image rmi nginx || true
+	sudo rm -rf /home/sminot/data/mariadb 
+
+prune:
+	docker system prune -af --volumes

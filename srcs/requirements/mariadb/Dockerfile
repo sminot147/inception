@@ -22,7 +22,6 @@ RUN  mkdir -p /run/mysqld && \
     mkdir -p /var/log/mysql && \
     chown -R mysql:mysql /var/log/mysql
 
-
 EXPOSE 3306
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
