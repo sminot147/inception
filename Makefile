@@ -24,7 +24,8 @@ fclean: down
 	docker image rmi wordpress || true
 	docker image rmi mariadb || true
 	docker image rmi nginx || true
-	sudo rm -rf /home/sminot/data/mariadb 
+	sudo rm -rf /home/sminot/data/mariadb
+	sudo rm -rf /home/sminot/data/wordpress
 
 prune:
 	docker system prune -af --volumes

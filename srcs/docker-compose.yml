@@ -13,6 +13,22 @@ services:
     networks:
       - inception
 
+ nginx:
+    build:
+      context: ./requirements/nginx
+    image: nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "443:443"
+    networks:
+      - inception
+    volumes:
+      - wordpress_data:/var/www/wordpress
+    # depends_on:
+    #   wordpress:
+    #     condition: service_healthy
+
 networks:
   inception:
     driver: bridge
@@ -25,3 +41,11 @@ volumes:
       o: bind
       device: /home/sminot/data/mariadb
     name: mariadb_data
+  
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/sminot/data/wordpress
+    name: wordpress_data
