@@ -1,5 +1,4 @@
-- Verifier que les containeurs redemare
-
+- Ajouter les connexion ssl a nginx
 
 Liste des commande :
 1- Construire l'image

@@ -13,6 +13,20 @@ services:
     networks:
       - inception
 
+ wordpress:
+    build:
+      context: ./requirements/wordpress
+    image: wordpress
+    container_name: wordpress
+    env_file: .env
+    restart: always
+    ports:
+      - "443:443"
+    networks:
+      - inception
+    volumes:
+      - wordpress_data:/var/www/wordpress
+
  nginx:
     build:
       context: ./requirements/nginx

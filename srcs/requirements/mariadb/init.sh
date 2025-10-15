@@ -1,5 +1,4 @@
 #!/bin/bash
-# set -e
 
 # Check the required environment variables
 #test existance and not empty
