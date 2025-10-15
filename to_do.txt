@@ -47,3 +47,14 @@ docker compose build --no-cache
 # Nettoyer complètement
 docker compose down -v
 docker system prune -a
+
+
+
+
+php8.2-mysql \       # Extension pour connecter PHP à MariaDB/MySQL
+php8.2-curl \        # Support des requêtes HTTP (téléchargements de WP, API)
+php8.2-gd \          # Traitement d’images dans WordPress (thumbnails, etc.)
+php8.2-xml \         # Parsing XML (nécessaire pour certains plugins ou fonctionnalités)
+php8.2-mbstring \    # Gestion des chaînes multioctets (UTF-8) dans WordPress
+php8.2-zip &&        # Gestion des archives (installations de plugins/thèmes ZIP)
+apt-get clean        # Nettoyer le cache d’apt pour gagner de la place
