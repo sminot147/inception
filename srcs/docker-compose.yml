@@ -51,13 +51,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/sminot/data/mariadb
+      device: /home/${USER}/data/mariadb
     name: mariadb_data
-  
+
   wordpress_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/sminot/data/wordpress
+      device: /home/${USER}/data/wordpress
     name: wordpress_data
