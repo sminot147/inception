@@ -1,34 +1,46 @@
 #!/bin/bash
 
 # Check the required environment variables
-#test existance and not empty
-# : ${MARIADB_ROOT_PASSWORD:?"MARIADB_ROOT_PASSWORD is not set"}
-# : ${MARIADB_DATABASE:?"MARIADB_DATABASE is not set"}
-# : ${MARIADB_USER:?"MARIADB_USER is not set"}
-# : ${MARIADB_USER_PASSWORD:?"MARIADB_USER_PASSWORD is not set"}
 
-
-# #test for invalid characters
-# case "$MARIADB_ROOT_PASSWORD" in
-#   (*[!!-~]*|"") echo "MARIADB_ROOT_PASSWORD contains invalid characters" >&2; exit 1 ;;
-# esac
-
-# case "$MARIADB_USER_PASSWORD" in
-#   (*[!!-~]*|"") echo "MARIADB_USER_PASSWORD contains invalid characters" >&2; exit 1 ;;
-# esac
-
-# case "$MARIADB_USER" in
-#   (*[!a-zA-Z0-9_]*|"") echo "MARIADB_USER contains invalid characters" >&2; exit 1 ;;
-# esac
-
-# case "$MARIADB_DATABASE" in
-#   (*[!a-zA-Z0-9_]*|"") echo "MARIADB_DATABASE contains invalid characters" >&2; exit 1 ;;
-# esac
 
 
 if [ ! -f "/var/lib/mysql/myInit.txt" ]; then
 	echo "Initializing MariaDB database :"
 
+
+  #test existance and not empty
+  : ${MARIADB_ROOT_USER:?"MARIADB_ROOT_USER is not set"}
+  : ${MARIADB_ROOT_PWD:?"MARIADB_ROOT_PWD is not set"}
+  : ${MARIADB_DATABASE:?"MARIADB_DATABASE is not set"}
+  : ${MARIADB_USER:?"MARIADB_USER is not set"}
+  : ${MARIADB_USER_PWD:?"MARIADB_USER_PWD is not set"}
+
+
+  #test for invalid characters
+  ## --- MARIADB_ROOT_USER (type: user)
+  case "$MARIADB_ROOT_USER" in
+    (*[!a-zA-Z0-9_.@-]*|"") echo "MARIADB_ROOT_USER contains invalid characters" >&2; exit 1 ;;
+  esac
+
+  # --- MARIADB_ROOT_PWD (type: password)
+  case "$MARIADB_ROOT_PWD" in
+    (*[!a-zA-Z0-9!@#%^_+\-=:.,?]*|"") echo "MARIADB_ROOT_PWD contains invalid characters" >&2; exit 1 ;;
+  esac
+
+  # --- MARIADB_DATABASE (type: database name)
+  case "$MARIADB_DATABASE" in
+    (*[!a-zA-Z0-9_]*|"") echo "MARIADB_DATABASE contains invalid characters" >&2; exit 1 ;;
+  esac
+
+  # --- MARIADB_USER (type: user)
+  case "$MARIADB_USER" in
+    (*[!a-zA-Z0-9_.@-]*|"") echo "MARIADB_USER contains invalid characters" >&2; exit 1 ;;
+  esac
+
+  # --- MARIADB_USER_PWD (type: password)
+  case "$MARIADB_USER_PWD" in
+    (*[!a-zA-Z0-9!@#%^_+\-=:.,?]*|"") echo "MARIADB_USER_PWD contains invalid characters" >&2; exit 1 ;;
+  esac
 
 	# Launch the server in the background
 	mysqld --user=mysql --skip-networking & PID=$!
@@ -44,28 +56,37 @@ if [ ! -f "/var/lib/mysql/myInit.txt" ]; then
       sleep 1
       let i++
   done
+
 	# Creat the database and the user
   mariadb -u root <<EOF
+CREATE DATABASE IF NOT EXISTS \`${MARIADB_DATABASE}\`;
+
 CREATE USER IF NOT EXISTS '${MARIADB_ROOT_USER}'@'%' IDENTIFIED BY '${MARIADB_ROOT_PWD}';
 GRANT ALL PRIVILEGES ON *.* TO '${MARIADB_ROOT_USER}'@'%' WITH GRANT OPTION;
-ALTER USER '${MARIADB_ROOT_USER}'@'%' IDENTIFIED BY '${MARIADB_ROOT_PWD}';
-CREATE DATABASE IF NOT EXISTS \`${MARIADB_DATABASE}\`;
+
+
 CREATE USER IF NOT EXISTS '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_USER_PWD}';
 GRANT ALL PRIVILEGES ON \`${MARIADB_DATABASE}\`.* TO '${MARIADB_USER}'@'%';
+
+
+ALTER USER '${MARIADB_ROOT_USER}'@'%' IDENTIFIED BY '${MARIADB_ROOT_PWD}';
+ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('sminot147');
+
 DELETE FROM mysql.user WHERE User='';
+
 DROP DATABASE IF EXISTS test;
 DELETE FROM mysql.db WHERE Db='test' OR Db LIKE 'test_%';
+
 FLUSH PRIVILEGES;
+
 EOF
 
-# ------------------------------------------------------------------------------------------------ne focntonne pas chez moi
-# ALTER USER 'root'@'localhost' IDENTIFIED VIA MYSQUL_native_password USING PASSWORD('${MARIADB_ROOT_PWD}');
 
 
   touch "/var/lib/mysql/myInit.txt"
 
 	# Stop the server beofre restart it in the foreground
-  mysqladmin -u root -p"${MARIADB_ROOT_USER}" shutdown
+  mysqladmin -u root -p"${MARIADB_ROOT_PWD}" shutdown
   wait $PID
 
 

@@ -33,7 +33,7 @@ if [ ! -f /var/www/wordpress/myinit.txt ]; then
         --admin_user=$MARIADB_ROOT_USER \
         --admin_password=$MARIADB_ROOT_PWD \
         --path=/var/www/wordpress  \
-        --admin_email=$WP_MAIL_ADMIN
+        --admin_email=$WP_MAIL_ROOT
 
     wp user create --allow-root --role=author \
         $MARIADB_USER \
