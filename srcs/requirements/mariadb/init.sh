@@ -34,18 +34,24 @@ if [ ! -f "/var/lib/mysql/myInit.txt" ]; then
 	mysqld --user=mysql --skip-networking & PID=$!
 
 	# Wait the server
+  i=0
   until mysqladmin ping --silent; do
+      if [ $i == 10 ]; then
+        echo "MariaDB no respsonse -- Exit"
+        exit 1
+      fi
       echo "Waiting for MariaDB to start..."
       sleep 1
+      let i++
   done
 	# Creat the database and the user
   mariadb -u root <<EOF
-CREATE USER IF NOT EXISTS '${MYSQL_ROOT_USER}'@'%' IDENTIFIED BY '${MYSQL_ROOT_PWD}';
-GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_ROOT_USER}'@'%' WITH GRANT OPTION;
-ALTER USER '${MYSQL_ROOT_USER}'@'%' IDENTIFIED BY '${MYSQL_ROOT_PWD}';
-CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
-CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_USER_PWD}';
-GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
+CREATE USER IF NOT EXISTS '${MARIADB_ROOT_USER}'@'%' IDENTIFIED BY '${MARIADB_ROOT_PWD}';
+GRANT ALL PRIVILEGES ON *.* TO '${MARIADB_ROOT_USER}'@'%' WITH GRANT OPTION;
+ALTER USER '${MARIADB_ROOT_USER}'@'%' IDENTIFIED BY '${MARIADB_ROOT_PWD}';
+CREATE DATABASE IF NOT EXISTS \`${MARIADB_DATABASE}\`;
+CREATE USER IF NOT EXISTS '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_USER_PWD}';
+GRANT ALL PRIVILEGES ON \`${MARIADB_DATABASE}\`.* TO '${MARIADB_USER}'@'%';
 DELETE FROM mysql.user WHERE User='';
 DROP DATABASE IF EXISTS test;
 DELETE FROM mysql.db WHERE Db='test' OR Db LIKE 'test_%';
@@ -53,13 +59,13 @@ FLUSH PRIVILEGES;
 EOF
 
 # ------------------------------------------------------------------------------------------------ne focntonne pas chez moi
-# ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('${MYSQL_ROOT_PWD}');
+# ALTER USER 'root'@'localhost' IDENTIFIED VIA MYSQUL_native_password USING PASSWORD('${MARIADB_ROOT_PWD}');
 
 
   touch "/var/lib/mysql/myInit.txt"
 
 	# Stop the server beofre restart it in the foreground
-  mysqladmin -u root -p"${MARIADB_ROOT_PASSWORD}" shutdown
+  mysqladmin -u root -p"${MARIADB_ROOT_USER}" shutdown
   wait $PID
 
 

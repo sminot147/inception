@@ -4,7 +4,7 @@ DOCKER_COMPOSE_FILE=srcs/docker-compose.yml
 
 all: up
 
-re: fclean up
+re: clean up
 
 up:
 	mkdir -p /home/${USER}/data/mariadb

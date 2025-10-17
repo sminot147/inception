@@ -12,9 +12,6 @@ COPY ./init.sh		/usr/local/bin/init.sh
 
 RUN chmod +x /usr/local/bin/init.sh
 
-#Creat mysql user and set permissions
-# RUN groupadd -r mysql
-# RUN useradd -r -g mysql mysql
 RUN  mkdir -p /run/mysqld && \
 	chown -R mysql:mysql /run/mysqld && \
 	mkdir -p /var/lib/mysql && \
@@ -22,6 +19,6 @@ RUN  mkdir -p /run/mysqld && \
     mkdir -p /var/log/mysql && \
     chown -R mysql:mysql /var/log/mysql
 
-# EXPOSE 3306
+EXPOSE 3306
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]

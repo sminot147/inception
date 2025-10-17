@@ -1,7 +1,16 @@
 #!/bin/bash
 # Script d'initialisation de WordPress
 
-
+i=0
+until netcat -z "$MARIADB_HOST" 3306; do
+    if [ $i == 10 ]; then
+        echo "MariaDB no respsonse -- Exit"
+        exit 1
+    fi
+    echo "Waiting for MariaDB..."
+    sleep 2
+    let i++
+done
 
 # ---------------------------------tester les varaiables d'environnements
 
@@ -9,20 +18,33 @@
 if [ ! -f /var/www/html/myinit.txt ]; then
     echo "Initializing Wordpress database :"
 
-    # Copier le fichier de configuration exemple
-    cp /var/www/wordpress/wp-config-sample.php /var/www/wordpress/wp-config.php
+    wp core download --path=/var/www/wordpress --allow-root
 
-    # Remplacer les paramètres de base de données dans wp-config.php
-    sed -i "s/database_name_here/${DB_NAME}/" /var/www/wordpress/wp-config.php
-    sed -i "s/username_here/${DB_USER}/"     /var/www/wordpress/wp-config.php
-    sed -i "s/password_here/${DB_PASSWORD}/" /var/www/wordpress/wp-config.php
-    sed -i "s/localhost/${DB_HOST}/"         /var/www/wordpress/wp-config.php
+    wp config create --allow-root \
+        --dbname=$MARIADB_DATABASE \
+        --dbuser=$MARIADB_USER \
+        --dbpass=$MARIADB_USER_PWD \
+        --dbhost=$MARIADB_HOST \
+        --path=/var/www/wordpress
 
-    # (Optionnel) Définir les droits du propriétaire des fichiers sur www-data
+    wp core install --allow-root \
+        --url=https://$DOMAIN_NAME \
+        --title=Inception\
+        --admin_user=$MARIADB_ROOT_USER \
+        --admin_password=$MARIADB_ROOT_PWD \
+        --path=/var/www/wordpress  \
+        --admin_email=$WP_MAIL_ADMIN
+
+    wp user create --allow-root --role=author \
+        $MARIADB_USER \
+        $WP_MAIL_USER \
+        --user_pass=$MARIADB_PASSWD \
+        --path=/var/www/wordpress
+
     chown -R www-data:www-data /var/www/wordpress
-    echo "Wordpress database is initialize"
 
     touch /var/www/html/myinit.txt
+    echo "Wordpress database is initialize"
 else
   echo "Wordpress database is already initialize"
 fi

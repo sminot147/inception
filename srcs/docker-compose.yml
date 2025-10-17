@@ -22,8 +22,12 @@ services:
     restart: always
     networks:
       - inception
+    ports :
+      - "9000:9000"
     volumes:
       - wordpress_data:/var/www/wordpress
+    depends_on:
+      - mariadb
 
  nginx:
     build:
@@ -37,9 +41,8 @@ services:
       - inception
     volumes:
       - wordpress_data:/var/www/wordpress
-    # depends_on:
-    #   wordpress:
-    #     condition: service_healthy
+    depends_on:
+      - wordpress
 
 networks:
   inception:
