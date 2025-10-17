@@ -1,4 +1,4 @@
-.PHONY: all re up down logs clean prune fclean
+.PHONY: all re up down logs clean prune fclean d
 
 DOCKER_COMPOSE_FILE=srcs/docker-compose.yml
 
@@ -9,9 +9,12 @@ re: fclean up
 up:
 	mkdir -p /home/${USER}/data/mariadb
 	mkdir -p /home/${USER}/data/wordpress
-	chwon -R ${USER}:${USER} /home/${USER}/data
 	docker compose -f $(DOCKER_COMPOSE_FILE) up --build
 
+d:
+	mkdir -p /home/${USER}/data/mariadb
+	mkdir -p /home/${USER}/data/wordpress
+	docker compose -f $(DOCKER_COMPOSE_FILE) up --build -d
 
 down:
 	docker compose -f $(DOCKER_COMPOSE_FILE) down
