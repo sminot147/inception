@@ -1,4 +1,4 @@
-.PHONY: all re up down logs fclean prune logs
+.PHONY: all re up down logs clean prune fclean
 
 DOCKER_COMPOSE_FILE=srcs/docker-compose.yml
 
@@ -9,6 +9,7 @@ re: fclean up
 up:
 	mkdir -p /home/${USER}/data/mariadb
 	mkdir -p /home/${USER}/data/wordpress
+	chwon -R ${USER}:${USER} /home/${USER}/data
 	docker compose -f $(DOCKER_COMPOSE_FILE) up --build
 
 
@@ -18,7 +19,7 @@ down:
 logs:
 	docker compose -f $(DOCKER_COMPOSE_FILE) logs
 
-fclean: down
+clean: down
 	docker volume rm mariadb_data || true
 	docker volume rm wordpress_data || true
 	docker image rmi wordpress || true
@@ -29,3 +30,5 @@ fclean: down
 
 prune:
 	docker system prune -af --volumes
+
+fclean: clean prune
