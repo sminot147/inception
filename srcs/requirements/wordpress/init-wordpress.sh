@@ -15,7 +15,7 @@ done
 # ---------------------------------tester les varaiables d'environnements
 
 # Si wp-config.php n'existe pas, procéder à l'installation initiale
-if [ ! -f /var/www/html/myinit.txt ]; then
+if [ ! -f /var/www/wordpress/myinit.txt ]; then
     echo "Initializing Wordpress database :"
 
     wp core download --path=/var/www/wordpress --allow-root
@@ -43,7 +43,7 @@ if [ ! -f /var/www/html/myinit.txt ]; then
 
     chown -R www-data:www-data /var/www/wordpress
 
-    touch /var/www/html/myinit.txt
+    touch /var/www/wordpress/myinit.txt
     echo "Wordpress database is initialize"
 else
   echo "Wordpress database is already initialize"
