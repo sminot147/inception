@@ -11,7 +11,7 @@ services:
       - mariadb_data:/var/lib/mysql
     restart: always
     networks:
-      - inception
+      - mariaDB
 
  wordpress:
     build:
@@ -21,9 +21,8 @@ services:
     env_file: .env
     restart: always
     networks:
-      - inception
-    ports :
-      - "9000:9000"
+      - wordpress
+      - mariaDB
     volumes:
       - wordpress_data:/var/www/wordpress
     depends_on:
@@ -38,14 +37,17 @@ services:
     ports:
       - "443:443"
     networks:
-      - inception
+      - wordpress
     volumes:
       - wordpress_data:/var/www/wordpress
     depends_on:
       - wordpress
 
 networks:
-  inception:
+  mariaDB:
+    driver: bridge
+    internal : true
+  wordpress:
     driver: bridge
 
 volumes:
