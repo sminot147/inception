@@ -28,7 +28,6 @@ if [ ! -f /var/www/wordpress/myinit.txt ]; then
     : ${MARIADB_ROOT_PWD:?"MARIADB_ROOT_PWD is not set"}
     : ${WP_MAIL_ROOT:?"WP_MAIL_ROOT is not set"}
     : ${WP_MAIL_USER:?"WP_MAIL_USER is not set"}
-    : ${MARIADB_PASSWD:?"MARIADB_PASSWD is not set"}
 
 
     # --- MARIADB_DATABASE (database name)
@@ -81,10 +80,6 @@ if [ ! -f /var/www/wordpress/myinit.txt ]; then
     (*) echo "WP_MAIL_USER seems invalid (must contain '@' and '.')" >&2; exit 1 ;;
     esac
 
-    # --- MARIADB_PASSWD (password)
-    case "$MARIADB_PASSWD" in
-    (*[!a-zA-Z0-9!@#%^_+\-=:.,?]*|"") echo "MARIADB_PASSWD contains invalid characters (avoid shell meta chars)" >&2; exit 1 ;;
-    esac
 
 
     wp core download --path=/var/www/wordpress --allow-root
@@ -93,7 +88,7 @@ if [ ! -f /var/www/wordpress/myinit.txt ]; then
 
     wp core install --allow-root --url=https://$DOMAIN_NAME --title=Inception --admin_user=$MARIADB_ROOT_USER --admin_password=$MARIADB_ROOT_PWD --path=/var/www/wordpress  --admin_email=$WP_MAIL_ROOT
 
-    wp user create --allow-root --role=author $MARIADB_USER $WP_MAIL_USER --user_pass=$MARIADB_PASSWD --path=/var/www/wordpress
+    wp user create --allow-root --role=author $MARIADB_USER $WP_MAIL_USER --user_pass=$MARIADB_USER_PWD --path=/var/www/wordpress
 
     chown -R www-data:www-data /var/www/wordpress
 
